@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('menus', function (Blueprint $table) {
-            $table->integer('harga')->nullable()->after('kategori_id');
+            $table->integer('harga')->nullable()->after('menu_category_id');
         });
     }
 

@@ -150,11 +150,14 @@ class CustomerController extends Controller
             $total += $item['harga'] * $item['qty'];
         }
 
+        $paymentMethod = $request->input('payment_method', 'Kasir');
+        $status = $paymentMethod === 'QRIS' ? 'Menunggu Pembayaran QRIS' : 'Menunggu Konfirmasi';
+
         // Create Order
         $order = Order::create([
             'table_id' => session('table_id'),
             'total' => $total,
-            'status' => 'Menunggu Konfirmasi',
+            'status' => $status,
         ]);
 
         // Create Order Details

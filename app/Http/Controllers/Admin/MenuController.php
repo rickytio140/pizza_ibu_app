@@ -30,7 +30,7 @@ class MenuController extends Controller
         $rules = [
             'menu_category_id' => 'required|exists:menu_categories,id',
             'nama' => 'required|string|max:255',
-            'gambar' => 'nullable|image|max:2048',
+            'gambar' => 'nullable|image|max:10240', // Max 10MB
             'is_available' => 'boolean',
         ];
 
@@ -56,7 +56,10 @@ class MenuController extends Controller
         }
 
         if ($request->hasFile('gambar')) {
-            $data['gambar'] = $request->file('gambar')->store('menus', 'public');
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/menus'), $filename);
+            $data['gambar'] = 'uploads/menus/' . $filename;
         }
 
         Menu::create($data);
@@ -78,7 +81,7 @@ class MenuController extends Controller
         $rules = [
             'menu_category_id' => 'required|exists:menu_categories,id',
             'nama' => 'required|string|max:255',
-            'gambar' => 'nullable|image|max:2048',
+            'gambar' => 'nullable|image|max:10240', // Max 10MB
             'is_available' => 'boolean',
         ];
 
@@ -104,10 +107,16 @@ class MenuController extends Controller
         }
 
         if ($request->hasFile('gambar')) {
-            if ($menu->gambar) {
+            if ($menu->gambar && file_exists(public_path($menu->gambar))) {
+                unlink(public_path($menu->gambar));
+            } elseif ($menu->gambar) {
+                // Backward compatibility for old storage files
                 Storage::disk('public')->delete($menu->gambar);
             }
-            $data['gambar'] = $request->file('gambar')->store('menus', 'public');
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/menus'), $filename);
+            $data['gambar'] = 'uploads/menus/' . $filename;
         }
 
         $menu->update($data);

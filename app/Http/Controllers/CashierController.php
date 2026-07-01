@@ -10,7 +10,7 @@ class CashierController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with('table')->whereIn('status', ['Menunggu Konfirmasi', 'Lunas (QRIS)', 'Lunas (Cash)']);
+        $query = Order::with('table')->whereIn('status', ['Menunggu Konfirmasi', 'Menunggu Pembayaran QRIS', 'Lunas (QRIS)', 'Lunas (Cash)']);
 
         if ($request->filled('nomor_meja')) {
             $query->whereHas('table', function ($q) use ($request) {

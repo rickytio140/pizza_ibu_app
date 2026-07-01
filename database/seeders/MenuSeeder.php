@@ -13,11 +13,11 @@ class MenuSeeder extends Seeder
     public function run(): void
     {
         $menus = [
-            ['menu_category_id' => 1, 'nama' => 'Pizza Meat Lover', 'deskripsi' => 'Sosis, Daging Cincang, Keju', 'harga' => 85000, 'gambar' => ''],
-            ['menu_category_id' => 1, 'nama' => 'Pizza Margherita', 'deskripsi' => 'Tomat, Daun Basil, Mozzarella', 'harga' => 70000, 'gambar' => ''],
-            ['menu_category_id' => 2, 'nama' => 'Es Teh Manis', 'deskripsi' => 'Segar dan manis', 'harga' => 10000, 'gambar' => ''],
-            ['menu_category_id' => 2, 'nama' => 'Jus Jeruk', 'deskripsi' => 'Jeruk peras asli', 'harga' => 15000, 'gambar' => ''],
-            ['menu_category_id' => 3, 'nama' => 'Kentang Goreng', 'deskripsi' => 'Gurih dan renyah', 'harga' => 20000, 'gambar' => ''],
+            ['menu_category_id' => 1, 'nama' => 'Pizza Meat Lover', 'harga' => 85000, 'gambar' => ''],
+            ['menu_category_id' => 1, 'nama' => 'Pizza Margherita', 'harga' => 70000, 'gambar' => ''],
+            ['menu_category_id' => 2, 'nama' => 'Es Teh Manis', 'harga' => 10000, 'gambar' => ''],
+            ['menu_category_id' => 2, 'nama' => 'Jus Jeruk', 'harga' => 15000, 'gambar' => ''],
+            ['menu_category_id' => 3, 'nama' => 'Kentang Goreng', 'harga' => 20000, 'gambar' => ''],
         ];
 
         foreach ($menus as $menu) {

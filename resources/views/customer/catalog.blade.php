@@ -1,102 +1,122 @@
 <x-customer-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-bold text-xl text-gray-800">
-                Menu Kami - {{ session('nomor_meja') }}
-            </h2>
-            <a href="{{ route('customer.cart') }}" class="relative inline-flex items-center p-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                <span class="sr-only">Keranjang</span>
-                @if($cartCount > 0)
-                <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-blue-500 border-2 border-white rounded-full -top-2 -right-2">{{ $cartCount }}</div>
-                @endif
-            </a>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-black text-slate-800 tracking-tight">Pizza Ibu</h1>
+                <p class="text-xs font-semibold text-orange-500">Meja {{ session('nomor_meja') }}</p>
+            </div>
+            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+            </div>
         </div>
     </x-slot>
 
-    <div class="py-6 px-4">
+    <div class="px-5 py-6">
+        <!-- Notifikasi -->
         @if(session('success'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
+            <div class="mb-6 bg-emerald-50 border border-emerald-100 text-emerald-700 px-4 py-3 rounded-2xl flex gap-3 items-center shadow-sm">
+                <svg class="w-5 h-5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span class="text-sm font-semibold">{{ session('success') }}</span>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
+            <div class="mb-6 bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-2xl flex gap-3 items-center shadow-sm">
+                <svg class="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-sm font-semibold">{{ session('error') }}</span>
             </div>
         @endif
 
         @foreach($categories as $category)
             @if($category->menus->count() > 0)
-                <div class="mb-8">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">{{ $category->nama }}</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="mb-8 last:mb-0">
+                    <h3 class="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
+                        {{ $category->nama }}
+                        <span class="h-px flex-1 bg-slate-200"></span>
+                    </h3>
+                    
+                    <div class="flex flex-col gap-4">
                         @foreach($category->menus as $menu)
-                            <div class="bg-white rounded-lg shadow overflow-hidden flex">
-                                @if($menu->gambar)
-                                    <img src="{{ asset('storage/' . $menu->gambar) }}" alt="{{ $menu->nama }}" class="w-32 h-32 object-cover">
-                                @else
-                                    <div class="w-32 h-32 bg-gray-200 flex items-center justify-center text-gray-500 text-xs">No Image</div>
-                                @endif
-                                <div class="p-4 flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <h4 class="font-bold text-lg text-gray-900">{{ $menu->nama }}</h4>
-                                    </div>
-                                    <form action="{{ route('customer.cart.add') }}" method="POST" class="mt-2 flex flex-col justify-end h-full">
-                                        @csrf
-                                        <input type="hidden" name="menu_id" value="{{ $menu->id }}">
-                                        <input type="hidden" name="qty" value="1">
-                                        
-                                        @if(strtolower($category->nama) === 'pizza')
-                                            <div class="mb-3 text-sm flex flex-col gap-1.5">
-                                                @php $hasChecked = false; @endphp
-                                                @if($menu->harga_small)
-                                                <label class="flex items-center gap-2 cursor-pointer bg-gray-50 hover:bg-red-50 p-1.5 rounded border border-transparent hover:border-red-200 transition-colors">
-                                                    <input type="radio" name="ukuran" value="Small" class="text-red-600 focus:ring-red-500" required {{ !$hasChecked ? 'checked' : '' }}>
-                                                    @php $hasChecked = true; @endphp
-                                                    <span class="flex-1 text-gray-700">Small</span>
-                                                    <span class="font-bold text-red-600 text-xs">Rp{{ number_format($menu->harga_small, 0, ',', '.') }}</span>
-                                                </label>
-                                                @endif
-                                                @if($menu->harga_medium)
-                                                <label class="flex items-center gap-2 cursor-pointer bg-gray-50 hover:bg-red-50 p-1.5 rounded border border-transparent hover:border-red-200 transition-colors">
-                                                    <input type="radio" name="ukuran" value="Medium" class="text-red-600 focus:ring-red-500" required {{ !$hasChecked ? 'checked' : '' }}>
-                                                    @php $hasChecked = true; @endphp
-                                                    <span class="flex-1 text-gray-700">Medium</span>
-                                                    <span class="font-bold text-red-600 text-xs">Rp{{ number_format($menu->harga_medium, 0, ',', '.') }}</span>
-                                                </label>
-                                                @endif
-                                                @if($menu->harga_large)
-                                                <label class="flex items-center gap-2 cursor-pointer bg-gray-50 hover:bg-red-50 p-1.5 rounded border border-transparent hover:border-red-200 transition-colors">
-                                                    <input type="radio" name="ukuran" value="Large" class="text-red-600 focus:ring-red-500" required {{ !$hasChecked ? 'checked' : '' }}>
-                                                    @php $hasChecked = true; @endphp
-                                                    <span class="flex-1 text-gray-700">Large</span>
-                                                    <span class="font-bold text-red-600 text-xs">Rp{{ number_format($menu->harga_large, 0, ',', '.') }}</span>
-                                                </label>
-                                                @endif
-                                            </div>
-                                            
-                                            @if($menu->harga_small || $menu->harga_medium || $menu->harga_large)
-                                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded text-sm transition-colors mt-auto">Tambah Keranjang</button>
-                                            @else
-                                                <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-2 px-3 rounded text-sm mt-auto cursor-not-allowed">Harga Belum Diatur</button>
-                                            @endif
+                            <div class="bg-white rounded-3xl shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden flex flex-col p-2">
+                                <div class="flex gap-4 p-2">
+                                    <!-- Gambar Menu -->
+                                    <div class="w-24 h-24 shrink-0 rounded-2xl overflow-hidden bg-slate-100">
+                                        @if($menu->gambar)
+                                            <img src="{{ str_starts_with($menu->gambar, 'uploads/') ? asset($menu->gambar) : asset('storage/' . $menu->gambar) }}" alt="Menu" class="w-full h-full object-cover text-transparent">
                                         @else
-                                            <div class="mb-3 text-sm">
-                                                @if($menu->harga)
-                                                    <div class="font-bold text-red-600 text-lg">Rp{{ number_format($menu->harga, 0, ',', '.') }}</div>
-                                                @endif
+                                            <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                             </div>
-                                            
-                                            @if($menu->harga)
-                                                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded text-sm transition-colors mt-auto">Tambah Keranjang</button>
-                                            @else
-                                                <button type="button" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-2 px-3 rounded text-sm mt-auto cursor-not-allowed">Harga Belum Diatur</button>
-                                            @endif
                                         @endif
-                                    </form>
+                                    </div>
+                                    
+                                    <!-- Info Menu -->
+                                    <div class="flex-1 py-1">
+                                        <h4 class="font-bold text-slate-900 leading-tight mb-1">{{ $menu->nama }}</h4>
+                                        @if($menu->harga)
+                                            <div class="font-black text-orange-500 text-sm mt-1">Rp {{ number_format($menu->harga, 0, ',', '.') }}</div>
+                                        @endif
+                                    </div>
                                 </div>
+
+                                <!-- Form Tambah ke Keranjang -->
+                                <form action="{{ route('customer.cart.add') }}" method="POST" class="mt-2 bg-slate-50 p-3 rounded-2xl">
+                                    @csrf
+                                    <input type="hidden" name="menu_id" value="{{ $menu->id }}">
+                                    <input type="hidden" name="qty" value="1">
+                                    
+                                    @if(strtolower($category->nama) === 'pizza')
+                                        <div class="flex justify-between items-center bg-white p-1 rounded-xl shadow-sm border border-slate-200 mb-3 overflow-hidden">
+                                            @php $hasChecked = false; @endphp
+                                            @if($menu->harga_small)
+                                            <label class="flex-1 cursor-pointer">
+                                                <input type="radio" name="ukuran" value="Small" class="peer sr-only" required {{ !$hasChecked ? 'checked' : '' }}>
+                                                @php $hasChecked = true; @endphp
+                                                <div class="text-center py-2 text-[10px] font-bold text-slate-500 rounded-lg peer-checked:bg-orange-500 peer-checked:text-white transition-colors">
+                                                    S<br><span class="opacity-80 font-normal">Rp{{ number_format($menu->harga_small/1000, 0) }}k</span>
+                                                </div>
+                                            </label>
+                                            @endif
+                                            @if($menu->harga_medium)
+                                            <label class="flex-1 cursor-pointer">
+                                                <input type="radio" name="ukuran" value="Medium" class="peer sr-only" required {{ !$hasChecked ? 'checked' : '' }}>
+                                                @php $hasChecked = true; @endphp
+                                                <div class="text-center py-2 text-[10px] font-bold text-slate-500 rounded-lg peer-checked:bg-orange-500 peer-checked:text-white transition-colors">
+                                                    M<br><span class="opacity-80 font-normal">Rp{{ number_format($menu->harga_medium/1000, 0) }}k</span>
+                                                </div>
+                                            </label>
+                                            @endif
+                                            @if($menu->harga_large)
+                                            <label class="flex-1 cursor-pointer">
+                                                <input type="radio" name="ukuran" value="Large" class="peer sr-only" required {{ !$hasChecked ? 'checked' : '' }}>
+                                                @php $hasChecked = true; @endphp
+                                                <div class="text-center py-2 text-[10px] font-bold text-slate-500 rounded-lg peer-checked:bg-orange-500 peer-checked:text-white transition-colors">
+                                                    L<br><span class="opacity-80 font-normal">Rp{{ number_format($menu->harga_large/1000, 0) }}k</span>
+                                                </div>
+                                            </label>
+                                            @endif
+                                        </div>
+                                        
+                                        @if($menu->harga_small || $menu->harga_medium || $menu->harga_large)
+                                            <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 px-4 rounded-xl text-sm shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                                Tambah
+                                            </button>
+                                        @else
+                                            <button type="button" disabled class="w-full bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl text-sm cursor-not-allowed">Habis</button>
+                                        @endif
+                                    @else
+                                        <!-- Non Pizza Item -->
+                                        @if($menu->harga)
+                                            <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 px-4 rounded-xl text-sm shadow-md transition-transform active:scale-95 flex items-center justify-center gap-2">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                                Tambah
+                                            </button>
+                                        @else
+                                            <button type="button" disabled class="w-full bg-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl text-sm cursor-not-allowed">Habis</button>
+                                        @endif
+                                    @endif
+                                </form>
                             </div>
                         @endforeach
                     </div>
